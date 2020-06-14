@@ -1,0 +1,23 @@
+{
+  "name": "zero-sama",
+  "version": "2.4.0",
+  "description": "A custom OSL bot which helps with OSL weekly status reports of members.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "telegram-bot"
+  ],
+  "author": "Sanjith PK",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase": "^7.14.0",
+    "firebase-admin": "^8.10.0",
+    "node-telegram-bot-api": "^0.50.0"
+  }
+}
