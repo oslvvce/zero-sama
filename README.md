@@ -42,13 +42,13 @@ npm install
 #### Start the bot
 
 ```sh
-node server
+npm start
 ```
 
 ## Useful Information
 
-**Website:** https://osl-status.netlify.app <br>
-**Repo:** https://github.com/osl-vvce/zero-sama
+**Website:** https://status.oslvvce.com <br>
+**Repo:** https://github.com/sanjithpk/zero-sama
 
 ## How can you help?
 
@@ -61,5 +61,6 @@ node server
 - [Express](https://expressjs.com/)
 - [Firebase](https://firebase.google.com/)
 - [Node Telegram Bot API](https://github.com/yagop/node-telegram-bot-api)
+- [TypeScript](https://www.typescriptlang.org)
 
 Happy coding!

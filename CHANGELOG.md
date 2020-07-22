@@ -1,5 +1,11 @@
 # Change Log
 
+## v3.0.0
+
+###### _22 Jul, 2020_
+
+- Full code rewrite using TypeScript
+
 ## v2.3.1
 
 ###### _12 Jun, 2020_
