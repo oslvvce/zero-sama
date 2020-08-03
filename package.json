@@ -1,15 +1,15 @@
 {
   "name": "zero-sama",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "A custom OSL bot which helps with OSL weekly status reports of members.",
   "main": "app.ts",
   "scripts": {
-    "start": "ts-node app.ts",
+    "start": "node app.js",
     "dev": "nodemon --exec ts-node app.ts",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["telegram-bot"],
+  "author": "OSL <osl@vvce.ac.in>",
   "license": "ISC",
   "devDependencies": {
     "@types/body-parser": "^1.19.0",

@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.0.2
+
+###### _03 Aug, 2020_
+
+- Fixed the function which reminds members individually to submit their reports
+
+## v3.0.1
+
+###### _02 Aug, 2020_
+
+- Added the function which reminds members individually to submit their reports
+
 ## v3.0.0
 
 ###### _22 Jul, 2020_
