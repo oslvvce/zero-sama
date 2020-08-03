@@ -5,13 +5,19 @@ import telegramBot from "node-telegram-bot-api"
 import firebase from "firebase"
 import admin from "firebase-admin"
 
-type Members = Record<string, string>
+interface Members {
+  [key: string]: string
+}
+
+interface ChatId {
+  [key: number]: string
+}
 
 interface MembersData {
   membersList: string[]
-  usernames: Record<string, string>
-  chatId: Record<number, string>
-  memberNameChatIdMap: Record<string, string>
+  usernames: Members
+  chatId: ChatId
+  memberNameChatIdMap: Members
 }
 
 const { token } = require("./config.json")
@@ -180,37 +186,7 @@ setInterval(async () => {
   let date = new Date()
   if (
     date.getDay() === 1 &&
-    date.getHours() === 12 &&
-    date.getMinutes() === 30
-  ) {
-    const shuffle = await shuffleDocRef.get()
-    const shuffleData = shuffle.data() as Shuffle
-    const dates = shuffleData.dates
-    const date = dates[dates.length - 1].toDate().toString()
-    source.forEach(async member => {
-      let memberDoc = await db
-        .collection("members")
-        .doc(member)
-        .get()
-      let memberData = memberDoc.data() as MemberData
-      if (memberData[date].timeStamp === undefined) {
-        let reporterName = memberData[date].reporter
-        bot.sendMessage(
-          memberNameChatIdMap[reporterName],
-          `Hey there, This is a gentle reminder. Please submit your report soon using the /report command.`
-        )
-      }
-    })
-  }
-})
-
-// Sends a list of members who haven't reported yet in the main group
-
-setInterval(async () => {
-  let date = new Date()
-  if (
-    date.getDay() === 1 &&
-    date.getHours() === 12 &&
+    date.getHours() === 3 &&
     date.getMinutes() === 30
   ) {
     const shuffle = await shuffleDocRef.get()
@@ -379,10 +355,10 @@ bot.onText(/\/report/, async msg => {
               .set(
                 {
                   [date]: {
-                    osl,
-                    past,
-                    future,
-                    fun,
+                    osl: osl,
+                    past: past,
+                    future: future,
+                    fun: fun,
                     reporter: memberName,
                     timeStamp: new Date()
                   }
@@ -404,7 +380,7 @@ bot.onText(/\/report/, async msg => {
 
 // Telegram Bot Code End
 
-app.get("/", (_req, res) => {
+app.get("/", (req, res) => {
   res.send("Zero Sama is Up")
 })
 
