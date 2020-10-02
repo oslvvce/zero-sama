@@ -19,7 +19,7 @@ const {
   membersList,
   usernames,
   chatId,
-  memberNameChatIdMap
+  memberNameChatIdMap,
 }: MembersData = require("./data.json")
 const firebaseConfig = require("./firebaseConfig.json")
 const serviceAccount = require("./serviceAccountKey.json")
@@ -32,7 +32,7 @@ app.use(cors())
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 })
 const db = admin.firestore()
 const FieldValue = admin.firestore.FieldValue
@@ -93,7 +93,11 @@ const shuffleMembers = () => {
 
 setInterval(() => {
   let date = new Date()
-  if (date.getDay() === 6 && date.getHours() === 1 && date.getMinutes() === 0) {
+  if (
+    date.getDay() === 6 &&
+    date.getHours() === 13 &&
+    date.getMinutes() === 0
+  ) {
     date.setDate(date.getDate() + 1)
     shuffleMembers()
     let sourceReporterMap: Members = {}
@@ -102,7 +106,7 @@ setInterval(() => {
     shuffleDocRef.update({
       members: sourceReporterMap,
       timeStamp: new Date(),
-      dates: FieldValue.arrayUnion(date)
+      dates: FieldValue.arrayUnion(date),
     })
     for (let i = 0; i < reporter.length; i++) {
       db.collection("members")
@@ -110,8 +114,8 @@ setInterval(() => {
         .set(
           {
             [date.toString()]: {
-              reporter: source[i]
-            }
+              reporter: source[i],
+            },
           },
           { merge: true }
         )
@@ -124,7 +128,7 @@ setInterval(() => {
 const oslGroupId = -1001405263968
 
 const bot = new telegramBot(token, {
-  polling: true
+  polling: true,
 })
 
 interface ResponseCallbacks {
@@ -188,10 +192,7 @@ setInterval(async () => {
     const dates = shuffleData.dates
     const date = dates[dates.length - 1].toDate().toString()
     source.forEach(async member => {
-      let memberDoc = await db
-        .collection("members")
-        .doc(member)
-        .get()
+      let memberDoc = await db.collection("members").doc(member).get()
       let memberData = memberDoc.data() as MemberData
       if (memberData[date].timeStamp === undefined) {
         let reporterName = memberData[date].reporter
@@ -221,16 +222,13 @@ setInterval(async () => {
     let status = new Promise(async resolve => {
       for (let idx = 0; idx < source.length; idx++) {
         let member = source[idx]
-        const membersData = await db
-          .collection("members")
-          .doc(member)
-          .get()
+        const membersData = await db.collection("members").doc(member).get()
         const memberData = membersData.data() as MemberData
         if (memberData[date].timeStamp === undefined) {
           reporterNames.push(memberData[date].reporter)
         }
         if (idx === source.length - 1) {
-          setTimeout(function() {
+          setTimeout(function () {
             resolve()
           }, 1000)
         }
@@ -272,11 +270,12 @@ bot.on("message", async msg => {
           .set(
             {
               [msg.chat.id]: {
-                name: text
-              }
+                name: text,
+              },
             },
             { merge: true }
           )
+        bot.sendMessage(msg.chat.id, "Successfully updated name!")
       } else {
         bot.sendMessage(msg.chat.id, "Please enter your full name!")
       }
@@ -289,8 +288,8 @@ bot.on("message", async msg => {
           .set(
             {
               [msg.chat.id]: {
-                username: text
-              }
+                username: text,
+              },
             },
             { merge: true }
           )
@@ -302,8 +301,8 @@ bot.on("message", async msg => {
         .set(
           {
             [msg.chat.id]: {
-              usn: text.toUpperCase()
-            }
+              usn: text.toUpperCase(),
+            },
           },
           { merge: true }
         )
@@ -339,13 +338,13 @@ bot.onText(/\/report/, async msg => {
     const optKeyboard: telegramBot.SendMessageOptions = {
       parse_mode: "Markdown",
       reply_markup: {
-        keyboard: [[{ text: "Yes" }], [{ text: "No" }]]
-      }
+        keyboard: [[{ text: "Yes" }], [{ text: "No" }]],
+      },
     }
     const optRemove: telegramBot.SendMessageOptions = {
       reply_markup: {
-        remove_keyboard: true
-      }
+        remove_keyboard: true,
+      },
     }
 
     await bot.sendMessage(
@@ -384,8 +383,8 @@ bot.onText(/\/report/, async msg => {
                     future,
                     fun,
                     reporter: memberName,
-                    timeStamp: new Date()
-                  }
+                    timeStamp: new Date(),
+                  },
                 },
                 { merge: true }
               )
@@ -421,10 +420,7 @@ app.get("/reports", async (_req, res) => {
 
 app.get("/reports/:username", async (req, res) => {
   const { username } = req.params
-  const member = await db
-    .collection("members")
-    .doc(usernames[username])
-    .get()
+  const member = await db.collection("members").doc(usernames[username]).get()
   res.json(member.data())
 })
 
