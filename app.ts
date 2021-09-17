@@ -19,7 +19,7 @@ const {
   membersList,
   usernames,
   chatId,
-  memberNameChatIdMap,
+  memberNameChatIdMap
 }: MembersData = require("./data.json")
 const firebaseConfig = require("./firebaseConfig.json")
 const serviceAccount = require("./serviceAccountKey.json")
@@ -32,7 +32,7 @@ app.use(cors())
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount)
 })
 const db = admin.firestore()
 const FieldValue = admin.firestore.FieldValue
@@ -101,24 +101,33 @@ setInterval(() => {
     date.setDate(date.getDate() + 1)
     shuffleMembers()
     let sourceReporterMap: Members = {}
-    for (let i = 0; i < reporter.length; i++)
+    for (let i = 0; i < reporter.length; i++) {
       sourceReporterMap[source[i]] = reporter[i]
+    }
+
     shuffleDocRef.update({
       members: sourceReporterMap,
       timeStamp: new Date(),
-      dates: FieldValue.arrayUnion(date),
+      dates: FieldValue.arrayUnion(date)
     })
+
     for (let i = 0; i < reporter.length; i++) {
       db.collection("members")
         .doc(reporter[i])
         .set(
           {
             [date.toString()]: {
-              reporter: source[i],
-            },
+              reporter: source[i]
+            }
           },
           { merge: true }
         )
+      db.collection("members")
+        .doc("sourceStatus")
+        .update(
+        {
+          reporter: false
+        })
     }
   }
 }, 1000 * 60)
@@ -128,7 +137,7 @@ setInterval(() => {
 const oslGroupId = -1001405263968
 
 const bot = new telegramBot(token, {
-  polling: true,
+  polling: true
 })
 
 interface ResponseCallbacks {
@@ -141,6 +150,7 @@ interface Shuffle {
   dates: firebase.firestore.Timestamp[]
   members: Members
   timeStamp: Date
+  sourceStatus: Members
 }
 
 interface WeekData {
@@ -192,14 +202,49 @@ setInterval(async () => {
     const dates = shuffleData.dates
     const date = dates[dates.length - 1].toDate().toString()
     source.forEach(async member => {
-      let memberDoc = await db.collection("members").doc(member).get()
+      let memberDoc = await db
+        .collection("members")
+        .doc(member)
+        .get()
       let memberData = memberDoc.data() as MemberData
       if (memberData[date].timeStamp === undefined) {
         let reporterName = memberData[date].reporter
+        const optKeyboard: telegramBot.SendMessageOptions = {
+          parse_mode: "Markdown",
+          reply_markup: {
+            keyboard: [[{ text: "Source Did not respond yet" }], [{ text: "Did not asked the report yet" }]]
+          }
+        }
+        const optRemove: telegramBot.SendMessageOptions = {
+          reply_markup: {
+            remove_keyboard: true
+          }
+        }
+     
         bot.sendMessage(
           memberNameChatIdMap[reporterName],
           `Hey there, This is a gentle reminder. Please submit your report soon using the /report command.`
         )
+        await bot.sendMessage(
+          memberNameChatIdMap[reporterName],
+          `Just in case your source didn't show up, let us know.`,
+          optKeyboard
+        )
+        var chatId = parseInt(memberNameChatIdMap[reporterName])
+        responseCallbacks[chatId] = async response => {
+          var status = (response.text == "Source Did not respond yet") ? true : false
+          db.collection("members")
+            .doc("sourceStatus")
+            .update({
+              reporterName: status
+            }
+            )
+          bot.sendMessage(
+            memberNameChatIdMap[reporterName],
+            `Alright, Thanks!`,
+            optRemove
+          )
+        }
       }
     })
   }
@@ -219,16 +264,31 @@ setInterval(async () => {
     const dates = shuffleData.dates
     const date = dates[dates.length - 1].toDate().toString()
     let reporterNames: string[] = []
-    let status = new Promise(async resolve => {
+    let sourceNames: string[] = []
+    let status = new Promise<void>(async resolve => {
       for (let idx = 0; idx < source.length; idx++) {
         let member = source[idx]
-        const membersData = await db.collection("members").doc(member).get()
+        const membersData = await db
+          .collection("members")
+          .doc(member)
+          .get()
+
+        var sources = await db.collection("members")
+          .doc("sourceStatus")
+          .get()
+          .then( query => {
+          query._fieldsProto[source[idx]].booleanValue
+          })
+
+        sources && sourceNames.push(source[idx])
+
         const memberData = membersData.data() as MemberData
-        if (memberData[date].timeStamp === undefined) {
-          reporterNames.push(memberData[date].reporter)
+        if (memberData[date].timeStamp === undefined && !sources) {
+          let reporters = memberData[date].reporter
+          reporterNames.push(reporters)
         }
         if (idx === source.length - 1) {
-          setTimeout(function () {
+          setTimeout(function() {
             resolve()
           }, 1000)
         }
@@ -238,6 +298,10 @@ setInterval(async () => {
       bot.sendMessage(
         oslGroupId,
         `Those who have not submitted the report yet:\n${reporterNames.join(
+          "\n"
+        )}
+        \n\n
+        Those who did not respond to their reporters yet:\n${sourceNames.join(
           "\n"
         )}`
       )
@@ -270,8 +334,8 @@ bot.on("message", async msg => {
           .set(
             {
               [msg.chat.id]: {
-                name: text,
-              },
+                name: text
+              }
             },
             { merge: true }
           )
@@ -288,8 +352,8 @@ bot.on("message", async msg => {
           .set(
             {
               [msg.chat.id]: {
-                username: text,
-              },
+                username: text
+              }
             },
             { merge: true }
           )
@@ -301,8 +365,8 @@ bot.on("message", async msg => {
         .set(
           {
             [msg.chat.id]: {
-              usn: text.toUpperCase(),
-            },
+              usn: text.toUpperCase()
+            }
           },
           { merge: true }
         )
@@ -338,13 +402,13 @@ bot.onText(/\/report/, async msg => {
     const optKeyboard: telegramBot.SendMessageOptions = {
       parse_mode: "Markdown",
       reply_markup: {
-        keyboard: [[{ text: "Yes" }], [{ text: "No" }]],
-      },
+        keyboard: [[{ text: "Yes" }], [{ text: "No" }]]
+      }
     }
     const optRemove: telegramBot.SendMessageOptions = {
       reply_markup: {
-        remove_keyboard: true,
-      },
+        remove_keyboard: true
+      }
     }
 
     await bot.sendMessage(
@@ -383,8 +447,8 @@ bot.onText(/\/report/, async msg => {
                     future,
                     fun,
                     reporter: memberName,
-                    timeStamp: new Date(),
-                  },
+                    timeStamp: new Date()
+                  }
                 },
                 { merge: true }
               )
@@ -420,7 +484,10 @@ app.get("/reports", async (_req, res) => {
 
 app.get("/reports/:username", async (req, res) => {
   const { username } = req.params
-  const member = await db.collection("members").doc(usernames[username]).get()
+  const member = await db
+    .collection("members")
+    .doc(usernames[username])
+    .get()
   res.json(member.data())
 })
 
