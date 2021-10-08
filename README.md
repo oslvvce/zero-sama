@@ -42,7 +42,13 @@ npm install
 #### Start the bot
 
 ```sh
-npm start
+npm run dev
+```
+
+#### Build the bot
+
+```sh
+npm run build
 ```
 
 ## Useful Information
