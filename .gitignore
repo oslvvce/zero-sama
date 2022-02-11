@@ -11,7 +11,7 @@
 /rewamp
 
 # production
-/build
+/dist
 
 # misc
 .DS_Store
@@ -19,6 +19,9 @@
 .env.development.local
 .env.test.local
 .env.production.local
+config.json
+firebaseConfig.json
+serviceAccountKey.json
 
 npm-debug.log*
 yarn-debug.log*
