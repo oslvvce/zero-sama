@@ -36,7 +36,8 @@ app.get("/info", async (_req, res) => {
 })
 
 app.get("/reports", async (_req, res) => {
-  res.json("TODO")
+  let memberCollection = await db.collection("members").get()
+  res.json(memberCollection.docs.map(doc => doc.data()))
 })
 
 app.get("/reports/:username", async (req, res) => {
