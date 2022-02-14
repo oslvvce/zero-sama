@@ -22,16 +22,27 @@ export const getChatIds = async (db: firestore.Firestore) => {
   return chatIds
 }
 
-export const getMemberChatIdMap = async (db: firestore.Firestore) => {
+export const getAllChatIds = async (db: firestore.Firestore) => {
   const memberDoc = await db.collection("details").doc("members").get()
   const members = memberDoc.data() as MemberDetails
   let chatIds: { [key: string]: string } = {}
   Object.keys(members).forEach(member => {
     const memberDetails = members[member]
-    if (memberDetails.warningsLeft > 0)
-      chatIds[member] = memberDetails.telegramId
+    chatIds[memberDetails.telegramId] = member
   })
   return chatIds
+}
+
+export const getMemberChatIdMap = async (db: firestore.Firestore) => {
+  const memberDoc = await db.collection("details").doc("members").get()
+  const members = memberDoc.data() as MemberDetails
+  let memberChatIdMap: { [key: string]: string } = {}
+  Object.keys(members).forEach(member => {
+    const memberDetails = members[member]
+    if (memberDetails.warningsLeft > 0)
+      memberChatIdMap[member] = memberDetails.telegramId
+  })
+  return memberChatIdMap
 }
 
 export const getName = async (db: firestore.Firestore, username: string) => {

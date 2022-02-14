@@ -1,6 +1,7 @@
 import { firestore } from "firebase-admin"
 import TelegramBot from "node-telegram-bot-api"
 import { ResponseCallbacks } from "src/models/response-callbacks"
+import { getAllChatIds } from "../services/members"
 
 export const add = (
   bot: TelegramBot,
@@ -8,25 +9,70 @@ export const add = (
   responseCallbacks: ResponseCallbacks
 ) => {
   bot.onText(/\/add/, async msg => {
-    await bot.sendMessage(msg.chat.id, `Please enter your full name`)
-    responseCallbacks[msg.chat.id] = async response => {
-      var fullname = response.text
-      await bot.sendMessage(msg.chat.id, `Enter your desired username`)
+    const chatIds = await getAllChatIds(db)
+    if (msg.chat.id in chatIds) {
+      const optKeyboard: TelegramBot.SendMessageOptions = {
+        parse_mode: "Markdown",
+        reply_markup: {
+          keyboard: [[{ text: "Yes" }], [{ text: "No" }]],
+        },
+      }
+      const optRemove: TelegramBot.SendMessageOptions = {
+        reply_markup: {
+          remove_keyboard: true,
+        },
+      }
+      await bot.sendMessage(
+        msg.chat.id,
+        "Want to rejoin the system?",
+        optKeyboard
+      )
       responseCallbacks[msg.chat.id] = async response => {
-        var username = response.text
-        await bot.sendMessage(msg.chat.id, `Enter your USN`)
-        responseCallbacks[msg.chat.id] = response => {
-          var usn = response.text
+        if (response.text == "Yes") {
           db.collection("details")
-            .doc("telegram")
-            .set({
-              [msg.chat.id]: {
-                fullname,
-                username,
-                usn,
+            .doc("members")
+            .set(
+              {
+                [chatIds[msg.chat.id]]: {
+                  warningsLeft: 3,
+                },
               },
-            })
-          bot.sendMessage(msg.chat.id, "Successfully added user!")
+              { merge: true }
+            )
+          bot.sendMessage(
+            msg.chat.id,
+            "Success, added you back to the system",
+            optRemove
+          )
+        } else {
+          bot.sendMessage(
+            msg.chat.id,
+            "No problem, join when you are ready to commit",
+            optRemove
+          )
+        }
+      }
+    } else {
+      await bot.sendMessage(msg.chat.id, `Please enter your full name`)
+      responseCallbacks[msg.chat.id] = async response => {
+        var fullname = response.text
+        await bot.sendMessage(msg.chat.id, `Enter your desired username`)
+        responseCallbacks[msg.chat.id] = async response => {
+          var username = response.text
+          await bot.sendMessage(msg.chat.id, `Enter your USN`)
+          responseCallbacks[msg.chat.id] = response => {
+            var usn = response.text
+            db.collection("details")
+              .doc("telegram")
+              .set({
+                [msg.chat.id]: {
+                  fullname,
+                  username,
+                  usn,
+                },
+              })
+            bot.sendMessage(msg.chat.id, "Successfully added user!")
+          }
         }
       }
     }

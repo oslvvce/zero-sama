@@ -71,6 +71,21 @@ export const report = (
                   },
                   { merge: true }
                 )
+              db.collection("details")
+                .doc("report")
+                .set(
+                  {
+                    [source]: {
+                      osl,
+                      past,
+                      future,
+                      fun,
+                      reporter: memberName,
+                      timeStamp: new Date(),
+                    },
+                  },
+                  { merge: true }
+                )
               bot.sendMessage(
                 msg.chat.id,
                 `Alright then, your report has been updated successfully. Thank you and see you again next week! :)`
