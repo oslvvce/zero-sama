@@ -1,32 +1,19 @@
 import express from "express"
 import cors from "cors"
-import telegramBot from "node-telegram-bot-api"
 import admin from "firebase-admin"
-import { report } from "./services/report"
+import "dotenv/config"
+import { botCommands } from "./commands"
 
-const { token } = require("../config.json")
 const serviceAccount = require("../serviceAccountKey.json")
 
 // Initialize Firebase
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
+
 const db = admin.firestore()
 
-// Telegram Bot Code Start
-
-const oslGroupId = -1001405263968
-
-const bot = new telegramBot(token, {
-  polling: true,
-})
-
-bot.on("message", async msg => {
-  let message = msg.text
-  console.log(message, oslGroupId)
-})
-
-report()
+botCommands()
 
 // Initialize express
 const app = express()
