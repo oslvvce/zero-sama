@@ -28,6 +28,14 @@ app.get("/", (_req, res) => {
   db.collection("members").get()
 })
 
+app.get("/info", async (_req, res) => {
+  res.json("TODO")
+})
+
+app.get("/reports", async (_req, res) => {
+  res.json("TODO")
+})
+
 app.get("/reports/:username", async (req, res) => {
   const { username } = req.params
   const name = await getName(db, username)
