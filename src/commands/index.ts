@@ -1,13 +1,12 @@
 import { firestore } from "firebase-admin"
 import telegramBot from "node-telegram-bot-api"
 import { ResponseCallbacks } from "src/models/response-callbacks"
+import { ADMIN_IDs, OSL_GROUP_ID } from "src/utils/constants"
 import { add } from "./add"
 import { help } from "./help"
+import { report } from "./report"
 
 const token = process.env.token as string
-
-const OSL_GROUP_ID = -1001405263968
-const ADMIN_IDs = [329865594]
 
 var responseCallbacks: ResponseCallbacks = {}
 
@@ -41,4 +40,5 @@ Don't know what to do? Try hitting /help to know what I can do.`
 export const botCommands = (db: firestore.Firestore) => {
   help(bot)
   add(bot, db, responseCallbacks)
+  report(bot, db, responseCallbacks)
 }

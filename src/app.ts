@@ -3,6 +3,7 @@ import cors from "cors"
 import admin from "firebase-admin"
 import "dotenv/config"
 import { botCommands } from "./commands"
+import { getName } from "./services/members"
 
 const serviceAccount = require("../serviceAccountKey.json")
 
@@ -25,6 +26,14 @@ app.use(express.json())
 app.get("/", (_req, res) => {
   res.send("Zero Sama is Up")
   db.collection("members").get()
+})
+
+app.get("/reports/:username", async (req, res) => {
+  const { username } = req.params
+  const name = await getName(db, username)
+  if (name.length == 0) res.status(400).json("Username not found")
+  const member = await db.collection("members").doc(name).get()
+  res.json(member.data())
 })
 
 app.listen(process.env.PORT || 3000, () => {
