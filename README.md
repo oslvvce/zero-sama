@@ -36,10 +36,13 @@ npm install
 #### Requirements
 
 - `serviceAccountKey.json` &#8658; Create a firebase project and download this.
-- `firebaseConfig.json` &#8658; Create a firebase project and download this.
-- `config.json` &#8658; Create a telegram bot to get the bot token from Bot Father.
+- `.env` &#8658; Create a telegram bot to get the bot token from Bot Father.
 
-#### Start the bot
+#### Start the bot in development (Needs two shells)
+
+```sh
+npm run watch
+```
 
 ```sh
 npm run dev
