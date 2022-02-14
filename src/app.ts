@@ -13,7 +13,7 @@ admin.initializeApp({
 
 const db = admin.firestore()
 
-botCommands()
+botCommands(db)
 
 // Initialize express
 const app = express()
@@ -26,5 +26,5 @@ app.get("/", (_req, res) => {
 })
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log(`App is running on port ${process.env.PORT}`)
+  console.log(`App is running on port ${process.env.PORT || 3000}`)
 })
