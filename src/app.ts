@@ -4,6 +4,7 @@ import admin from "firebase-admin"
 import "dotenv/config"
 import { botCommands } from "./commands"
 import { getName } from "./services/members"
+import { Shuffle } from "./models/member"
 
 const serviceAccount = require("../serviceAccountKey.json")
 
@@ -29,7 +30,9 @@ app.get("/", (_req, res) => {
 })
 
 app.get("/info", async (_req, res) => {
-  res.json("TODO")
+  const shuffle = await db.collection("details").doc("assignment").get()
+  const shuffleData = shuffle.data() as Shuffle
+  res.json([shuffleData.members, shuffleData.timeStamp])
 })
 
 app.get("/reports", async (_req, res) => {
