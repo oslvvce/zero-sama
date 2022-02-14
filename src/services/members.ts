@@ -1,5 +1,5 @@
 import { firestore } from "firebase-admin"
-import { MemberDetails } from "src/models/member"
+import { MemberDetails, Shuffle } from "src/models/member"
 
 export const getActiveMembers = async (db: firestore.Firestore) => {
   const memberDoc = await db.collection("details").doc("members").get()
@@ -54,4 +54,10 @@ export const getName = async (db: firestore.Firestore, username: string) => {
     if (memberDetails.username === username) name = member
   })
   return name
+}
+
+export const getSource = async (db: firestore.Firestore, name: string) => {
+  const shuffleDoc = await db.collection("details").doc("assignment").get()
+  const assignment = shuffleDoc.data() as Shuffle
+  return assignment.members[name]
 }

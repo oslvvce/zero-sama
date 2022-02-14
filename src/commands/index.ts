@@ -4,6 +4,7 @@ import { ResponseCallbacks } from "src/models/response-callbacks"
 import { ADMIN_IDs, OSL_GROUP_ID } from "../utils/constants"
 import { add } from "./add"
 import { help } from "./help"
+import { noShow } from "./noshow"
 import { remove } from "./remove"
 import { report } from "./report"
 
@@ -43,4 +44,5 @@ export const botCommands = (db: firestore.Firestore) => {
   add(bot, db, responseCallbacks)
   remove(bot, db)
   report(bot, db, responseCallbacks)
+  noShow(bot, db)
 }
