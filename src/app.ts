@@ -15,6 +15,8 @@ const db = admin.firestore()
 
 botCommands(db)
 
+// shuffleJob(db)
+
 // Initialize express
 const app = express()
 app.use(cors())
