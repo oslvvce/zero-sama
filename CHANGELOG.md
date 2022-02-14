@@ -1,6 +1,12 @@
 # Change Log
 
-## 3.0.2
+## v4.0.0
+
+###### _14 Feb, 2022_
+
+- Made the code modular
+
+## v3.0.2
 
 ###### _03 Aug, 2020_
 

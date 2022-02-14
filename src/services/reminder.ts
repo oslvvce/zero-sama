@@ -1,7 +1,7 @@
 import { firestore } from "firebase-admin"
 import TelegramBot from "node-telegram-bot-api"
 import { MemberData, MemberDetails, Shuffle } from "src/models/member"
-import { OSL_GROUP_ID } from "src/utils/constants"
+import { OSL_GROUP_ID } from "../utils/constants"
 import { getActiveMembers, getMemberChatIdMap } from "./members"
 
 export const reminder = (bot: TelegramBot, db: firestore.Firestore) => {

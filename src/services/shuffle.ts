@@ -87,6 +87,7 @@ export const shuffleJob = (db: firestore.Firestore) => {
             { merge: true }
           )
       }
+      db.collection("details").doc("report").delete()
     }
   }, 1000 * 60)
 }
