@@ -7,6 +7,7 @@ import { help } from "./help"
 import { noShow } from "./noshow"
 import { remove } from "./remove"
 import { report } from "./report"
+import { update } from "./update"
 
 const token = process.env.token as string
 
@@ -42,6 +43,7 @@ Don't know what to do? Try hitting /help to know what I can do.`
 export const botCommands = (db: firestore.Firestore) => {
   help(bot)
   add(bot, db, responseCallbacks)
+  update(bot, db, responseCallbacks)
   remove(bot, db)
   report(bot, db, responseCallbacks)
   noShow(bot, db)

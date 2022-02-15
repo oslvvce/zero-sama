@@ -1,5 +1,5 @@
 import { firestore } from "firebase-admin"
-import { Members } from "src/models/member"
+import { Members, MemberDetails } from "src/models/member"
 import { getActiveMembers } from "./members"
 
 function shuffle(array: string[]) {
@@ -49,6 +49,30 @@ const shuffleMembers = (source: string[], reporter: string[]) => {
   })
 }
 
+// Updates the warnings for noshowws and deletes report
+
+const reset = async (db: firestore.Firestore) => {
+  const noShowDoc = await db.collection("details").doc("noshow").get()
+  const noShows = noShowDoc.data()
+  const memberDoc = await db.collection("details").doc("members").get()
+  const memberData = memberDoc.data()
+  const updatedMembers: MemberDetails = {}
+  if (noShows && memberData) {
+    Object.keys(noShows).forEach(noShow => {
+      if (noShows[noShow]) {
+        memberData[noShow]
+        updatedMembers[noShow] = {
+          ...memberData[noShow],
+          warningsLeft: memberData[noShow].warningsLeft - 1,
+        }
+      }
+    })
+  }
+  db.collection("details").doc("members").set(updatedMembers, { merge: true })
+  db.collection("details").doc("noshow").delete()
+  db.collection("details").doc("report").delete()
+}
+
 // Shuffles the members list on every Saturday
 
 export const shuffleJob = (db: firestore.Firestore) => {
@@ -59,7 +83,7 @@ export const shuffleJob = (db: firestore.Firestore) => {
     let date = new Date()
     if (
       date.getDay() === 6 &&
-      date.getHours() === 13 &&
+      date.getHours() === 1 &&
       date.getMinutes() === 0
     ) {
       date.setDate(date.getDate() + 1)
@@ -87,7 +111,7 @@ export const shuffleJob = (db: firestore.Firestore) => {
             { merge: true }
           )
       }
-      db.collection("details").doc("report").delete()
+      reset(db)
     }
   }, 1000 * 60)
 }
