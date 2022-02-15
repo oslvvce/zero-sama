@@ -13,7 +13,7 @@ export const reminder = (bot: TelegramBot, db: firestore.Firestore) => {
   setInterval(async () => {
     let date = new Date()
     if (
-      date.getDay() === 0 &&
+      date.getDay() === 6 &&
       date.getHours() === 3 &&
       date.getMinutes() === 30
     ) {
@@ -40,7 +40,7 @@ export const reminder = (bot: TelegramBot, db: firestore.Firestore) => {
   setInterval(async () => {
     let date = new Date()
     if (
-      date.getDay() === 1 &&
+      (date.getDay() === 0 || date.getDay() === 1) &&
       date.getHours() === 3 &&
       date.getMinutes() === 30
     ) {
