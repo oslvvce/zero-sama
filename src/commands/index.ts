@@ -1,6 +1,7 @@
 import { firestore } from "firebase-admin"
 import telegramBot from "node-telegram-bot-api"
 import { ResponseCallbacks } from "src/models/response-callbacks"
+import { reminder } from "../services/reminder"
 import { ADMIN_IDs, OSL_GROUP_ID } from "../utils/constants"
 import { add } from "./add"
 import { help } from "./help"
@@ -47,4 +48,5 @@ export const botCommands = (db: firestore.Firestore) => {
   remove(bot, db)
   report(bot, db, responseCallbacks)
   noShow(bot, db)
+  reminder(bot, db)
 }

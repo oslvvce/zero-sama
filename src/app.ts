@@ -5,6 +5,7 @@ import "dotenv/config"
 import { botCommands } from "./commands"
 import { getName } from "./services/members"
 import { Shuffle } from "./models/member"
+import { shuffleJob } from "./services/shuffle"
 
 const serviceAccount = require("../serviceAccountKey.json")
 
@@ -17,7 +18,7 @@ const db = admin.firestore()
 
 botCommands(db)
 
-// shuffleJob(db)
+shuffleJob(db)
 
 // Initialize express
 const app = express()
