@@ -45,8 +45,10 @@ app.get("/reports/:username", async (req, res) => {
   const { username } = req.params
   const name = await getName(db, username)
   if (name.length == 0) res.status(400).json("Username not found")
-  const member = await db.collection("members").doc(name).get()
-  res.json(member.data())
+  else {
+    const member = await db.collection("members").doc(name).get()
+    res.json(member.data())
+  }
 })
 
 app.listen(process.env.PORT || 3000, () => {
