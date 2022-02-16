@@ -36,9 +36,14 @@ app.get("/info", async (_req, res) => {
   res.json([shuffleData.members, shuffleData.timeStamp])
 })
 
-app.get("/reports", async (_req, res) => {
-  let memberCollection = await db.collection("members").get()
-  res.json(memberCollection.docs.map(doc => doc.data()))
+app.get("/report", async (_req, res) => {
+  const reportDoc = await db.collection("details").doc("report").get()
+  const report = reportDoc.data()
+  const shuffleDoc = await db.collection("details").doc("assignment").get()
+  const { dates } = shuffleDoc.data() as Shuffle
+  const endDate = dates[dates.length - 1].toDate()
+  const startDate = new Date(endDate.getDate() - 7)
+  res.json({ dates: { startDate, endDate }, report })
 })
 
 app.get("/reports/:username", async (req, res) => {
@@ -47,8 +52,15 @@ app.get("/reports/:username", async (req, res) => {
   if (name.length == 0) res.status(400).json("Username not found")
   else {
     const member = await db.collection("members").doc(name).get()
-    res.json(member.data())
+    const memberData = member.data()
+    res.json({ name, memberData })
   }
+})
+
+app.get("/members", async (_req, res) => {
+  const memberDoc = await db.collection("details").doc("members").get()
+  const members = memberDoc.data()
+  res.json(members)
 })
 
 app.listen(process.env.PORT || 3000, () => {
