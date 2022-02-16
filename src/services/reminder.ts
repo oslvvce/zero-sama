@@ -99,6 +99,18 @@ export const reminder = (bot: TelegramBot, db: firestore.Firestore) => {
           }
         }
       })
+      const noshowDoc = await db.collection("details").doc("noshow").get()
+      const noshows = noshowDoc.data()
+      const noshowList: string[] = []
+      if (noshows) {
+        Object.keys(noshows).forEach(noshow => {
+          noshowList.push(noshow)
+        })
+        bot.sendMessage(
+          OSL_GROUP_ID,
+          `The sources who didn't show up:\n${noshowList.join("\n")}`
+        )
+      }
       status.then(() => {
         bot.sendMessage(
           OSL_GROUP_ID,
