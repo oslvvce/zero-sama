@@ -4,7 +4,7 @@
   "description": "A custom OSL bot which helps with OSL weekly status reports of members.",
   "main": "app.ts",
   "scripts": {
-    "start": "node app.js",
+    "start": "node ./src/app.js",
     "dev": "nodemon dist/app",
     "watch": "tsc -w",
     "build": "tsc",
